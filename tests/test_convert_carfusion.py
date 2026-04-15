@@ -41,3 +41,22 @@ def test_convert_scene_dir_empty(tmp_path: Path) -> None:
     raw.mkdir()
     with pytest.raises(SystemExit, match="No scene dirs"):
         convert_scene_dir(raw_dir=raw, image_subdir="images", out_json=tmp_path / "out.json")
+
+
+def test_convert_visibility_three_maps_to_visible(tmp_path: Path) -> None:
+    """CarFusion vis=3 (occluded) is mapped to COCO vis=2 (visible) — divergent from the legacy script."""
+    raw = tmp_path / "raw"
+    scene = raw / "scene_v3" / "gt"
+    scene.mkdir(parents=True)
+    (raw / "scene_v3" / "images").mkdir(parents=True)
+    # All 14 keypoints with vis=3 → expect every COCO keypoint visibility byte == 2
+    (scene / "1_100.txt").write_text(
+        "\n".join(f"{10 + k*5},{20 + k*5},{k + 1},1,3" for k in range(14))
+    )
+    out = tmp_path / "out.json"
+    convert_scene_dir(raw_dir=raw, image_subdir="images", out_json=out)
+    data = json.loads(out.read_text(encoding="utf-8"))
+    ann = data["annotations"][0]
+    coco_vis = ann["keypoints"][2::3]  # every third value is visibility
+    assert coco_vis == [2] * 14, f"vis=3 should map to COCO vis=2, got {coco_vis}"
+    assert ann["num_keypoints"] == 14

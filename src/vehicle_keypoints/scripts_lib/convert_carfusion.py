@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import json
 import time
+import zlib
 from pathlib import Path
 from typing import Any
 
@@ -141,9 +142,9 @@ def convert_scene_dir(
                 video_id = int(vid_str)
                 frame_id = int(frame_str)
             except ValueError:
-                video_id = hash(stem) & 0xFFFF
+                video_id = zlib.crc32(stem.encode("utf-8")) & 0xFFFF
                 frame_id = 0
-            image_id = int(scene_idx * 1e8 + video_id * 1e5 + frame_id)
+            image_id = scene_idx * 100_000_000 + video_id * 100_000 + frame_id
 
             data["images"].append(
                 {
