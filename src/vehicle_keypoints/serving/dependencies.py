@@ -1,19 +1,15 @@
-"""Dependency injection — singleton model loader."""
+"""FastAPI DI — lazy-loaded Detector singleton."""
 from __future__ import annotations
 
 import os
 from functools import lru_cache
 
-from ..inference.predict import load_model
-from ..utils import get_logger
-
-log = get_logger(__name__)
+from ..inference.predict import Detector
 
 
 @lru_cache(maxsize=1)
-def get_model():
-    ckpt = os.environ.get("MODEL_PATH")
-    if not ckpt:
-        raise RuntimeError("MODEL_PATH env var not set")
-    log.info("model.load", path=ckpt)
-    return load_model(ckpt)
+def get_detector() -> Detector:
+    ckpt = os.getenv("MODEL_CHECKPOINT", "artifacts/checkpoints/best.pt")
+    if os.path.isfile(ckpt):
+        return Detector.from_checkpoint(ckpt)
+    return Detector.from_pretrained_or_random("yolo26n")

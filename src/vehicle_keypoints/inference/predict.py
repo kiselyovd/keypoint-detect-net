@@ -71,18 +71,6 @@ class Detector:
         return detections
 
 
-def load_model(checkpoint_path: str | Path) -> Any:
-    """Backward-compatible loader used by the serving layer."""
-    from ultralytics import YOLO
-
-    return YOLO(str(checkpoint_path))
-
-
-def predict(model: Any, input_path: str | Path) -> list:
-    """Backward-compatible functional wrapper used by the serving layer."""
-    return Detector(model=model).predict(input_path)
-
-
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--checkpoint", required=True)

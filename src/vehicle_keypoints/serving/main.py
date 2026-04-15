@@ -8,7 +8,7 @@ from fastapi import FastAPI, Request
 from prometheus_fastapi_instrumentator import Instrumentator
 
 from ..utils import configure_logging, get_logger
-from .dependencies import get_model
+from .dependencies import get_detector
 from .errors import (
     InferenceError,
     ModelNotLoadedError,
@@ -24,7 +24,7 @@ log = get_logger(__name__)
 async def lifespan(app: FastAPI):
     configure_logging(json_output=True)
     try:
-        get_model()
+        get_detector()
         log.info("startup.model_loaded")
     except Exception as exc:
         log.warning("startup.model_not_loaded", error=str(exc))

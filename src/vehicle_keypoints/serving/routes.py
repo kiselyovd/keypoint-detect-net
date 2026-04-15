@@ -1,38 +1,77 @@
-"""FastAPI routes."""
+"""FastAPI routes for the pose detection service."""
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, UploadFile
+import io
+import tempfile
+import uuid
+from pathlib import Path
 
-from .. import __version__
-from ..inference.predict import predict
-from .dependencies import get_model
-from .errors import InferenceError
-from .schemas import HealthResponse
+from fastapi import APIRouter, Depends, File, Request, Response, UploadFile
+from fastapi.responses import JSONResponse
+from PIL import Image
+
+from ..inference.overlay import draw_keypoints
+from ..inference.predict import Detector
+from .dependencies import get_detector
+from .schemas import Detection, DetectionResponse, Keypoint
 
 router = APIRouter()
 
 
-@router.get("/health", response_model=HealthResponse)
-def health() -> HealthResponse:
+@router.get("/health")
+def health() -> dict:
+    return {"status": "ok"}
+
+
+@router.post("/detect")
+async def detect(
+    request: Request,
+    file: UploadFile = File(...),
+    overlay: bool = False,
+    detector: Detector = Depends(get_detector),
+):
+    request_id = request.headers.get("x-request-id") or str(uuid.uuid4())
+    payload = await file.read()
+    pil = Image.open(io.BytesIO(payload)).convert("RGB")
+    width, height = pil.size
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp:
+        pil.save(tmp.name, "JPEG")
+        tmp_path = Path(tmp.name)
     try:
-        get_model()
-        loaded = True
-    except Exception:
-        loaded = False
-    return HealthResponse(
-        status="ok" if loaded else "degraded", model_loaded=loaded, version=__version__,
+        raw_dets = detector.predict(str(tmp_path))
+    finally:
+        tmp_path.unlink(missing_ok=True)
+
+    dets = [
+        Detection(
+            bbox=[float(v) for v in d["bbox"]],
+            keypoints=[Keypoint(x=k[0], y=k[1], v=k[2]) for k in d["keypoints"]],
+            score=d["score"],
+        )
+        for d in raw_dets
+    ]
+    resp = DetectionResponse(
+        detections=dets, image_width=width, image_height=height, request_id=request_id
     )
+    if not overlay:
+        return JSONResponse(resp.model_dump())
 
-
-@router.post("/predict")
-async def predict_endpoint(file: UploadFile, model=Depends(get_model)) -> dict:
-    import tempfile
-
-    suffix = "." + (file.filename or "input.bin").split(".")[-1]
-    with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
-        tmp.write(await file.read())
-        tmp_path = tmp.name
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_out:
+        out_path = Path(tmp_out.name)
     try:
-        return predict(model, tmp_path)
-    except Exception as exc:
-        raise InferenceError(str(exc)) from exc
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".jpg") as tmp_in:
+            pil.save(tmp_in.name, "JPEG")
+            draw_keypoints(tmp_in.name, raw_dets, out_path)
+            overlay_bytes = out_path.read_bytes()
+    finally:
+        out_path.unlink(missing_ok=True)
+
+    return Response(
+        content=overlay_bytes,
+        media_type="image/png",
+        headers={
+            "x-request-id": request_id,
+            "x-detections": str(len(dets)),
+        },
+    )
