@@ -1,0 +1,9 @@
+defaults:
+  - data: default
+  - model: default
+  - trainer: default
+  - _self_
+
+experiment_name: "vehicle-keypoints"
+seed: 42
+log_level: INFO

@@ -1,0 +1,21 @@
+stages:
+  prepare:
+    cmd: python -m vehicle_keypoints.data.prepare --raw data/raw --out data/processed
+    deps:
+      - data/raw
+      - src/vehicle_keypoints/data/prepare.py
+    outs:
+      - data/processed
+  train:
+    cmd: python -m vehicle_keypoints.training.train
+    deps:
+      - data/processed
+      - src/vehicle_keypoints
+      - configs
+    params:
+      - params.yaml:
+    outs:
+      - artifacts/checkpoints
+    metrics:
+      - reports/metrics.json:
+          cache: false

@@ -1,0 +1,4 @@
+# @package _global_
+experiment_name: sota
+trainer:
+  max_epochs: 100

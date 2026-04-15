@@ -1,0 +1,3 @@
+yaml_path: data/processed/data.yaml
+batch_size: 16
+image_size: 640

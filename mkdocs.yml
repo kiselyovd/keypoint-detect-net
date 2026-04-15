@@ -1,0 +1,31 @@
+site_name: vehicle-keypoints
+site_description: Production-grade vehicle keypoint detection (14 anatomical car keypoints, CarFusion).
+repo_url: https://github.com/kiselyovd/vehicle-keypoints
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+    - scheme: slate
+      primary: indigo
+  features:
+    - content.code.copy
+    - navigation.indexes
+    - navigation.tabs
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.highlight
+  - tables
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - Training: training.md
+  - Serving: serving.md
+  - API reference: api.md

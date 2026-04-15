@@ -1,0 +1,69 @@
+---
+license: mit
+library_name: {{ library_name }}
+
+pipeline_tag: {{ pipeline_tag }}
+
+{% if base_model %}base_model: {{ base_model }}
+{% endif %}tags:
+{% for tag in tags %}  - {{ tag }}
+{% endfor %}datasets:
+{% for ds in datasets %}  - {{ ds }}
+{% endfor %}
+metrics:
+  - accuracy
+  - f1
+
+{% if widget_examples %}widget:
+{% for ex in widget_examples %}  - src: {{ ex.src }}
+    example_title: {{ ex.example_title }}
+{% endfor %}{% endif %}
+
+model-index:
+  - name: {{ repo_id }}
+    results:
+{% for task_result in metric_results %}      - task:
+          type: {{ task_result.task_type }}
+        dataset:
+          type: {{ task_result.dataset_type }}
+          name: {{ task_result.dataset_name }}
+        metrics:
+{% for m in task_result.metrics %}          - type: {{ m.type }}
+            value: {{ m.value }}
+{% endfor %}{% endfor %}
+---
+
+# vehicle-keypoints
+
+{{ model_description }}
+
+## Metrics
+
+{{ metrics_table }}
+
+## Usage
+
+
+```python
+from huggingface_hub import snapshot_download
+
+local_dir = snapshot_download("{{ repo_id }}")
+print(f"Model downloaded to: {local_dir}")
+```
+
+
+## Training Data
+
+{% if hf_dataset %}Trained on [{{ dataset_name or hf_dataset }}](https://huggingface.co/datasets/{{ hf_dataset }}).
+{% else %}Training dataset details not specified.
+{% endif %}
+
+## Source Code
+
+[GitHub Repository]({{ github_url }})
+
+## Intended Use
+
+This model is provided for research and educational purposes. The authors make no warranties about its suitability for any particular application. Users are responsible for evaluating the model's fitness for their use case, including fairness, safety, and compliance with applicable regulations.
+
+> **Note:** This model card was generated from the [ml-project-template](https://github.com/kiselyovd/ml-project-template) scaffold.

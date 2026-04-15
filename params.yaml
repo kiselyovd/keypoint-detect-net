@@ -1,0 +1,6 @@
+model:
+name: yolo26n
+lr: 1e-4
+trainer:
+  max_epochs: 30
+seed: 42
