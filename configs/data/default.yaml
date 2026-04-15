@@ -1,3 +1,15 @@
+# YOLO path (primary)
 yaml_path: data/processed/data.yaml
 batch_size: 16
 image_size: 640
+
+# ViTPose path (baseline)
+vitpose:
+  train_images: data/raw/train
+  train_annotations: data/raw/annotations/car_keypoints_train.json
+  val_images: data/raw/train
+  val_annotations: data/raw/annotations/car_keypoints_train.json
+  batch_size: 32
+  num_workers: 4
+  image_size: 256
+  seed: ${seed}

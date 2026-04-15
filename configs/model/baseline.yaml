@@ -1,0 +1,3 @@
+name: vitpose_s
+num_keypoints: 14
+lr: 5e-4
