@@ -1,4 +1,5 @@
 """ViTPose-Small wrapper returning heatmap predictions for N keypoints."""
+
 from __future__ import annotations
 
 import torch
@@ -22,7 +23,7 @@ class ViTPoseSmall(nn.Module):
                 self.backbone = VitPoseForPoseEstimation.from_pretrained(
                     model_id, num_labels=num_keypoints, ignore_mismatched_sizes=True
                 )
-            except Exception:  # noqa: BLE001 -- offline fallback
+            except Exception:
                 cfg = VitPoseConfig(num_labels=num_keypoints)
                 self.backbone = VitPoseForPoseEstimation(cfg)
         else:

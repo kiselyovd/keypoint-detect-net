@@ -1,4 +1,5 @@
 """FastAPI smoke test for /health and /detect."""
+
 from __future__ import annotations
 
 from pathlib import Path

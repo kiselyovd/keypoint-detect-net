@@ -1,4 +1,5 @@
 """Training entrypoint (Hydra-powered)."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -17,11 +18,6 @@ def main(cfg: DictConfig) -> None:
     seed_everything(cfg.get("seed", 42))
     log.info("train.start", config=OmegaConf.to_container(cfg, resolve=True))
 
-    import lightning as L
-    from lightning.pytorch.callbacks import EarlyStopping, ModelCheckpoint
-    from lightning.pytorch.loggers import MLFlowLogger
-
-    from ..models import build_model
     import ultralytics
     from ultralytics import YOLO
 

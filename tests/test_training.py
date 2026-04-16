@@ -1,4 +1,5 @@
 """Training smoke — one-epoch ViTPose fit on data/sample/."""
+
 from __future__ import annotations
 
 from pathlib import Path

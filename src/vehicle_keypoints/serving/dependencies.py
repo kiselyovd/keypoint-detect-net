@@ -1,4 +1,5 @@
 """FastAPI DI — lazy-loaded Detector singleton."""
+
 from __future__ import annotations
 
 import os

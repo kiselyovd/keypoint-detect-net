@@ -16,8 +16,10 @@ CarFusion visibility convention -> COCO visibility:
     3 (occluded)         -> 2 (labeled + visible)  # legacy script treated 3 as 1
     other                -> 0 (not labeled)
 """
+
 from __future__ import annotations
 
+import itertools
 import json
 import time
 import zlib
@@ -35,10 +37,24 @@ IMAGE_WIDTH, IMAGE_HEIGHT = 1920, 1080
 NUM_KEYPOINTS = 14
 
 _CARFUSION_SKELETON = [
-    [0, 2], [1, 3], [0, 1], [2, 3],
-    [9, 11], [10, 12], [9, 10], [11, 12],
-    [4, 0], [4, 9], [4, 5], [5, 1], [5, 10],
-    [6, 2], [6, 11], [7, 3], [7, 12], [6, 7],
+    [0, 2],
+    [1, 3],
+    [0, 1],
+    [2, 3],
+    [9, 11],
+    [10, 12],
+    [9, 10],
+    [11, 12],
+    [4, 0],
+    [4, 9],
+    [4, 5],
+    [5, 1],
+    [5, 10],
+    [6, 2],
+    [6, 11],
+    [7, 3],
+    [7, 12],
+    [6, 7],
 ]
 
 
@@ -50,7 +66,9 @@ def _to_int(s: str) -> int:
         return int(float(s))
 
 
-def _annotation_from_instance(instance: np.ndarray) -> tuple[list[int], list[list[int]], list[int], int]:
+def _annotation_from_instance(
+    instance: np.ndarray,
+) -> tuple[list[int], list[list[int]], list[int], int]:
     """Derive COCO bbox + convex-hull segmentation from a single instance's keypoints."""
     visible = instance[:, 2] > 0
     num_keypoints = int(visible.sum())
@@ -61,7 +79,9 @@ def _annotation_from_instance(instance: np.ndarray) -> tuple[list[int], list[lis
     if num_keypoints >= 3:
         try:
             hull = Polygon([(x[0], x[1]) for x in instance[visible, :2]]).convex_hull
-            frame = Polygon([(0, 0), (IMAGE_WIDTH, 0), (IMAGE_WIDTH, IMAGE_HEIGHT), (0, IMAGE_HEIGHT)])
+            frame = Polygon(
+                [(0, 0), (IMAGE_WIDTH, 0), (IMAGE_WIDTH, IMAGE_HEIGHT), (0, IMAGE_HEIGHT)]
+            )
             hull = hull.intersection(frame).convex_hull
             bounds = hull.bounds
             w, h = bounds[2] - bounds[0], bounds[3] - bounds[1]
@@ -174,7 +194,7 @@ def convert_scene_dir(
                         "area": bbox[2] * bbox[3],
                         "keypoints": kpts_flat,
                         "num_keypoints": num_kpts,
-                        "segmentation": [sum(seg, [])] if seg else [],
+                        "segmentation": ([list(itertools.chain.from_iterable(seg))] if seg else []),
                     }
                 )
                 ann_id += 1
@@ -182,6 +202,8 @@ def convert_scene_dir(
     Path(out_json).parent.mkdir(parents=True, exist_ok=True)
     Path(out_json).write_text(json.dumps(data), encoding="utf-8")
     log.info(
-        "convert_done", out=str(out_json),
-        images=len(data["images"]), annotations=len(data["annotations"]),
+        "convert_done",
+        out=str(out_json),
+        images=len(data["images"]),
+        annotations=len(data["annotations"]),
     )

@@ -1,4 +1,5 @@
 """Pydantic schemas for the /detect endpoint."""
+
 from __future__ import annotations
 
 from pydantic import BaseModel, Field

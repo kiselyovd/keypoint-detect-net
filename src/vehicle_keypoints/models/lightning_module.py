@@ -1,4 +1,5 @@
 """Lightning wrapper for ViTPose (heatmap-regression head)."""
+
 from __future__ import annotations
 
 import lightning as L

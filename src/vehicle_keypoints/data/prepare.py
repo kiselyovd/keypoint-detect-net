@@ -1,4 +1,5 @@
 """Prepare COCO -> Ultralytics YOLO-format dataset layout."""
+
 from __future__ import annotations
 
 import json
@@ -94,7 +95,10 @@ def _emit_split(
         dst_img = img_dir / flat
         shutil.copy2(src, dst_img)
 
-        rows = [_coco_to_yolo_row(a, img["width"], img["height"]) for a in ann_by_image.get(image_id, [])]
+        rows = [
+            _coco_to_yolo_row(a, img["width"], img["height"])
+            for a in ann_by_image.get(image_id, [])
+        ]
         (lbl_dir / (Path(flat).stem + ".txt")).write_text("\n".join(rows) + ("\n" if rows else ""))
         written += 1
     return written
@@ -116,7 +120,7 @@ def prepare_yolo_dataset(
     scenes = sorted({_scene_of(img["file_name"]) for img in train_coco["images"]})
     rng = random.Random(seed)
     rng.shuffle(scenes)
-    n_val = max(1, int(round(len(scenes) * val_frac)))
+    n_val = max(1, round(len(scenes) * val_frac))
     val_scenes = set(scenes[:n_val]) if len(scenes) > 1 else set()
     train_scenes = set(scenes) - val_scenes
     log.info("split.scenes", train=sorted(train_scenes), val=sorted(val_scenes))
@@ -132,7 +136,7 @@ def prepare_yolo_dataset(
     # If only one scene exists (test env with minimal fixtures), carve val at image level.
     if not val_ids and len(train_ids) > 1:
         train_ids_sorted = sorted(train_ids)
-        n_val_imgs = max(1, int(round(len(train_ids_sorted) * val_frac)))
+        n_val_imgs = max(1, round(len(train_ids_sorted) * val_frac))
         val_ids = set(train_ids_sorted[:n_val_imgs])
         train_ids = set(train_ids_sorted[n_val_imgs:])
 

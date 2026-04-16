@@ -1,4 +1,5 @@
 """Inference helper: load YOLO pose checkpoint and run detection."""
+
 from __future__ import annotations
 
 import argparse
@@ -21,20 +22,20 @@ class Detector:
     model: Any
 
     @classmethod
-    def from_checkpoint(cls, ckpt_path: str | Path) -> "Detector":
+    def from_checkpoint(cls, ckpt_path: str | Path) -> Detector:
         from ultralytics import YOLO
 
         return cls(model=YOLO(str(ckpt_path)))
 
     @classmethod
-    def from_pretrained_or_random(cls, base_name: str = "yolo26n") -> "Detector":
+    def from_pretrained_or_random(cls, base_name: str = "yolo26n") -> Detector:
         """Factory used in tests — loads pretrained pose `.pt` if available, else YAML."""
         from ultralytics import YOLO
 
         for candidate in (f"{base_name}-pose.pt", "yolo11n-pose.pt", f"{base_name}-pose.yaml"):
             try:
                 return cls(model=YOLO(candidate))
-            except Exception:  # noqa: BLE001
+            except Exception:
                 continue
         raise RuntimeError(f"Could not instantiate YOLO for {base_name}")
 
@@ -48,7 +49,9 @@ class Detector:
         keypoints = getattr(r, "keypoints", None)
         if boxes is None or keypoints is None or boxes.data.shape[0] == 0:
             return detections
-        bbox_xywh = boxes.xywh.cpu().numpy() if hasattr(boxes, "xywh") else boxes.data.cpu().numpy()[:, :4]
+        bbox_xywh = (
+            boxes.xywh.cpu().numpy() if hasattr(boxes, "xywh") else boxes.data.cpu().numpy()[:, :4]
+        )
         scores = boxes.conf.cpu().numpy() if hasattr(boxes, "conf") else np.ones(len(bbox_xywh))
         kpts_arr = keypoints.data.cpu().numpy() if hasattr(keypoints, "data") else None
         for i, bb in enumerate(bbox_xywh):
@@ -63,7 +66,12 @@ class Detector:
                 kpts = np.concatenate([kpts, pad], axis=0)
             detections.append(
                 {
-                    "bbox": [float(bb[0] - bb[2] / 2), float(bb[1] - bb[3] / 2), float(bb[2]), float(bb[3])],
+                    "bbox": [
+                        float(bb[0] - bb[2] / 2),
+                        float(bb[1] - bb[3] / 2),
+                        float(bb[2]),
+                        float(bb[3]),
+                    ],
                     "keypoints": [[float(x), float(y), float(v)] for x, y, v in kpts],
                     "score": float(scores[i]),
                 }

@@ -1,4 +1,5 @@
 """FastAPI routes for the pose detection service."""
+
 from __future__ import annotations
 
 import io

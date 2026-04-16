@@ -4,6 +4,7 @@ Yields `(crop_tensor, target_heatmap, visibility)` for each GT car instance.
 Crop is extracted from `bbox` (with margin) and resized to a fixed (H, W).
 Heatmap targets are Gaussian blobs at GT keypoint locations in the crop.
 """
+
 from __future__ import annotations
 
 import json
@@ -14,7 +15,6 @@ import numpy as np
 import torch
 from PIL import Image
 from torch.utils.data import Dataset
-
 
 NUM_KEYPOINTS = 14
 DEFAULT_CROP = (256, 192)  # (H, W) — ViTPose canonical
@@ -105,9 +105,7 @@ class CocoKeypointsDataset(Dataset):
             )
 
         crop = img_arr[y0:y1, x0:x1]
-        crop_img = Image.fromarray(crop).resize(
-            (self.crop_hw[1], self.crop_hw[0]), Image.BILINEAR
-        )
+        crop_img = Image.fromarray(crop).resize((self.crop_hw[1], self.crop_hw[0]), Image.BILINEAR)
         scale_x = self.heatmap_hw[1] / (x1 - x0)
         scale_y = self.heatmap_hw[0] / (y1 - y0)
 

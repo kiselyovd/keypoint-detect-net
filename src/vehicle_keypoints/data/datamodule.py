@@ -1,4 +1,5 @@
 """Lightning DataModule for ViTPose baseline (COCO-style top-down pose)."""
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -27,7 +28,9 @@ class KeypointsDataModule(L.LightningDataModule):
         self.val_ds: CocoKeypointsDataset | None = None
 
     def setup(self, stage: str | None = None) -> None:
-        self.train_ds = CocoKeypointsDataset(self.hparams.train_images, self.hparams.train_annotations)
+        self.train_ds = CocoKeypointsDataset(
+            self.hparams.train_images, self.hparams.train_annotations
+        )
         self.val_ds = CocoKeypointsDataset(self.hparams.val_images, self.hparams.val_annotations)
 
     def train_dataloader(self) -> DataLoader:

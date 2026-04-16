@@ -1,6 +1,8 @@
 """Data prep smoke tests: COCO -> YOLO conversion and split."""
+
 from __future__ import annotations
 
+import itertools
 import json
 from pathlib import Path
 
@@ -30,8 +32,10 @@ def _minimal_coco(n_images: int, scene: str) -> dict:
                 "num_keypoints": 14,
                 "iscrowd": 0,
                 "area": 300 * 400,
-                "keypoints": sum(
-                    ([100 + k * 10, 200 + k * 10, 2] for k in range(14)), start=[]
+                "keypoints": list(
+                    itertools.chain.from_iterable(
+                        [100 + k * 10, 200 + k * 10, 2] for k in range(14)
+                    )
                 ),
             }
             for i in range(n_images)
@@ -64,7 +68,7 @@ def test_prepare_yolo_dataset(tmp_path: Path) -> None:
         assert (out / "images" / split).is_dir()
         assert (out / "labels" / split).is_dir()
 
-    # label format: <cls> <cx> <cy> <w> <h> <kpt1_x> <kpt1_y> <v1> ... (14 kpts × 3)
+    # label format: <cls> <cx> <cy> <w> <h> <kpt1_x> <kpt1_y> <v1> ... (14 kpts x 3)
     all_labels = list((out / "labels" / "train").glob("*.txt"))
     assert all_labels
     line = all_labels[0].read_text().strip().splitlines()[0]
@@ -98,7 +102,7 @@ def test_coco_to_yolo_row_clips_bounds():
         assert 0.0 <= float(p) <= 1.0, f"{p} out of [0,1]"
     # keypoint coords clipped too
     for k in range(14):
-        kx, ky, v = parts[5 + k*3], parts[5 + k*3 + 1], parts[5 + k*3 + 2]
+        kx, ky = parts[5 + k * 3], parts[5 + k * 3 + 1]
         assert 0.0 <= float(kx) <= 1.0
         assert 0.0 <= float(ky) <= 1.0
 
@@ -115,9 +119,9 @@ def test_coco_to_yolo_row_zeros_invisible_kpts():
     row = _coco_to_yolo_row(ann, img_w=1920, img_h=1080)
     parts = row.split()
     for k in range(14):
-        kx = parts[5 + k*3]
-        ky = parts[5 + k*3 + 1]
-        v = parts[5 + k*3 + 2]
+        kx = parts[5 + k * 3]
+        ky = parts[5 + k * 3 + 1]
+        v = parts[5 + k * 3 + 2]
         assert kx == "0.000000"
         assert ky == "0.000000"
         assert v == "0"

@@ -1,8 +1,8 @@
 """Model factory -- main YOLO26-pose + baseline ViTPose-S."""
+
 from __future__ import annotations
 
 from typing import Any
-
 
 YOLO_FALLBACKS = ("yolo26n-pose.pt", "yolo11n-pose.pt")
 
@@ -23,7 +23,7 @@ def build_model(name: str, num_keypoints: int, pretrained: bool = True) -> Any:
             for candidate in (f"{name}-pose.pt", *YOLO_FALLBACKS):
                 try:
                     return YOLO(candidate)
-                except (FileNotFoundError, Exception):  # noqa: BLE001
+                except (FileNotFoundError, Exception):
                     continue
             raise ValueError(f"No pretrained pose checkpoint found for {name} (tried fallbacks)")
         return YOLO(f"{name}-pose.yaml")

@@ -1,4 +1,5 @@
 """Model smoke tests: factory returns working YOLO + ViTPose backbones."""
+
 from __future__ import annotations
 
 import pytest
@@ -11,7 +12,7 @@ def test_yolo_factory_loads():
     """YOLO wrapper returns an ultralytics.YOLO object."""
     try:
         model = build_model("yolo26n", num_keypoints=14, pretrained=False)
-    except Exception as exc:  # noqa: BLE001
+    except Exception as exc:
         pytest.skip(f"YOLO build failed in isolated env: {exc}")
     assert hasattr(model, "model") or hasattr(model, "predict")
 

@@ -1,4 +1,5 @@
 """Smoke test for CarFusion → COCO converter."""
+
 from __future__ import annotations
 
 import json
@@ -16,9 +17,7 @@ def test_convert_scene_dir_smoke(tmp_path: Path) -> None:
 
     # CarFusion .txt row format: x,y,kpt_id(1-14),instance_id,visibility(1|2|3)
     (scene_a / "1_100.txt").write_text(
-        "\n".join(
-            f"{10 + k*5},{20 + k*5},{k + 1},1,2" for k in range(14)
-        )
+        "\n".join(f"{10 + k * 5},{20 + k * 5},{k + 1},1,2" for k in range(14))
     )
     scene_img_dir = raw / "scene_a" / "images"
     scene_img_dir.mkdir(parents=True)
@@ -44,14 +43,17 @@ def test_convert_scene_dir_empty(tmp_path: Path) -> None:
 
 
 def test_convert_visibility_three_maps_to_visible(tmp_path: Path) -> None:
-    """CarFusion vis=3 (occluded) is mapped to COCO vis=2 (visible) — divergent from the legacy script."""
+    """CarFusion vis=3 (occluded) is mapped to COCO vis=2 (visible).
+
+    Divergent from the legacy script which treated vis=3 as invisible.
+    """
     raw = tmp_path / "raw"
     scene = raw / "scene_v3" / "gt"
     scene.mkdir(parents=True)
     (raw / "scene_v3" / "images").mkdir(parents=True)
     # All 14 keypoints with vis=3 → expect every COCO keypoint visibility byte == 2
     (scene / "1_100.txt").write_text(
-        "\n".join(f"{10 + k*5},{20 + k*5},{k + 1},1,3" for k in range(14))
+        "\n".join(f"{10 + k * 5},{20 + k * 5},{k + 1},1,3" for k in range(14))
     )
     out = tmp_path / "out.json"
     convert_scene_dir(raw_dir=raw, image_subdir="images", out_json=out)

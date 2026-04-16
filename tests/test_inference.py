@@ -1,4 +1,5 @@
 """End-to-end inference smoke on data/sample/."""
+
 from __future__ import annotations
 
 from pathlib import Path

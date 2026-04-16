@@ -3,14 +3,14 @@
 Copies 6 images from data/processed/images/train + their YOLO labels + writes a
 truncated COCO annotations.json subset so ViTPose tests can load real data.
 """
+
 from __future__ import annotations
 
 import argparse
 import json
 import random
 import shutil
-from pathlib import Path
-from pathlib import PurePosixPath
+from pathlib import Path, PurePosixPath
 
 
 def build_sample(src: Path, dst: Path, n: int = 6, seed: int = 42) -> None:
@@ -20,7 +20,9 @@ def build_sample(src: Path, dst: Path, n: int = 6, seed: int = 42) -> None:
 
     candidates = sorted((src / "images" / "train").glob("*.jpg"))
     if len(candidates) < n:
-        raise SystemExit(f"Not enough images in {src / 'images/train'}: need {n}, have {len(candidates)}")
+        raise SystemExit(
+            f"Not enough images in {src / 'images/train'}: need {n}, have {len(candidates)}"
+        )
     chosen = rng.sample(candidates, n)
 
     kept_stems: set[str] = set()

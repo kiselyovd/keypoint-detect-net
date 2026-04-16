@@ -1,22 +1,36 @@
 """Render keypoints + skeleton overlays on input images (CPU, OpenCV)."""
+
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 import cv2
-import numpy as np
 
 CARFUSION_SKELETON: tuple[tuple[int, int], ...] = (
-    (0, 2), (1, 3), (0, 1), (2, 3),
-    (9, 11), (10, 12), (9, 10), (11, 12),
-    (4, 0), (4, 9), (4, 5), (5, 1), (5, 10),
-    (6, 2), (6, 11), (7, 3), (7, 12), (6, 7),
+    (0, 2),
+    (1, 3),
+    (0, 1),
+    (2, 3),
+    (9, 11),
+    (10, 12),
+    (9, 10),
+    (11, 12),
+    (4, 0),
+    (4, 9),
+    (4, 5),
+    (5, 1),
+    (5, 10),
+    (6, 2),
+    (6, 11),
+    (7, 3),
+    (7, 12),
+    (6, 7),
 )
 
-_KPT_COLOR = (0, 255, 0)     # green (BGR)
+_KPT_COLOR = (0, 255, 0)  # green (BGR)
 _EDGE_COLOR = (0, 200, 255)  # amber
-_BBOX_COLOR = (255, 0, 0)    # blue
+_BBOX_COLOR = (255, 0, 0)  # blue
 
 
 def draw_keypoints(

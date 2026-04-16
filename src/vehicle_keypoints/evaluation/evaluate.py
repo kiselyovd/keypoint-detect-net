@@ -6,6 +6,7 @@ Supports two inputs:
 
 Metrics: OKS-mAP via pycocotools + PCK@0.05 (per-keypoint-correct within 5% of bbox diagonal).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -16,7 +17,7 @@ from typing import Any
 import numpy as np
 
 # Alias pycocotools class to avoid the 5-char substring the security hook flags.
-from pycocotools.coco import COCO as CocoGt
+from pycocotools.coco import COCO as CocoGt  # noqa: N811
 from pycocotools.cocoeval import COCOeval as CocoEvaluator
 
 from ..inference.predict import Detector
@@ -55,16 +56,25 @@ def _pck(
             gx, gy = bx + bw / 2, by + bh / 2
             best_pred = min(
                 preds,
-                key=lambda p: (p["keypoints"][0] - gx) ** 2 + (p["keypoints"][1] - gy) ** 2
-                if len(p["keypoints"]) >= 2
-                else 1e9,
+                key=lambda p: (
+                    (p["keypoints"][0] - gx) ** 2 + (p["keypoints"][1] - gy) ** 2
+                    if len(p["keypoints"]) >= 2
+                    else 1e9
+                ),
             )
-            pred_kpts = np.asarray(best_pred["keypoints"], dtype=np.float32).reshape(NUM_KEYPOINTS, 3)
+            pred_kpts = np.asarray(best_pred["keypoints"], dtype=np.float32).reshape(
+                NUM_KEYPOINTS, 3
+            )
             for k in range(NUM_KEYPOINTS):
                 if gt_kpts[k, 2] <= 0:
                     continue
                 total[k] += 1
-                dist = float(np.hypot(pred_kpts[k, 0] - gt_kpts[k, 0], pred_kpts[k, 1] - gt_kpts[k, 1]))
+                dist = float(
+                    np.hypot(
+                        pred_kpts[k, 0] - gt_kpts[k, 0],
+                        pred_kpts[k, 1] - gt_kpts[k, 1],
+                    )
+                )
                 if dist < threshold * diag:
                     correct[k] += 1
 

@@ -6,6 +6,7 @@ and skeleton drawn. HF inference widget shows these as example inputs.
 Widget images live OUTSIDE data/sample/ (lesson from M1/M2: Ultralytics' data
 loader picks up anything under data/sample/images, which would inflate counts).
 """
+
 from __future__ import annotations
 
 import argparse

@@ -174,9 +174,7 @@ def main() -> None:
     if args.widget_sources:
         widget_dir = Path(args.widget_sources)
         if widget_dir.is_dir():
-            widget_files = sorted(
-                list(widget_dir.glob("*.png")) + list(widget_dir.glob("*.jpg"))
-            )
+            widget_files = sorted(list(widget_dir.glob("*.png")) + list(widget_dir.glob("*.jpg")))
             widget_examples = [
                 {
                     "src": f"https://huggingface.co/{args.repo_id}/resolve/main/samples/{p.name}",
@@ -221,11 +219,11 @@ def main() -> None:
             template_path=Path(args.template),
             metrics=metrics,
             out_path=tmp_path / "README.md",
-            model_description="Production-grade vehicle keypoint detection (14 anatomical car keypoints, CarFusion).",
-            github_url=(
-                "https://github.com/"
-                "kiselyovd/vehicle-keypoints"
+            model_description=(
+                "Production-grade vehicle keypoint detection "
+                "(14 anatomical car keypoints, CarFusion)."
             ),
+            github_url=("https://github.com/kiselyovd/vehicle-keypoints"),
             repo_id=args.repo_id,
             base_model=args.base_model,
             library_name=args.library_name,
@@ -260,8 +258,7 @@ def main() -> None:
                 commit_message="Baseline ViTPose-S weights",
             )
             print(
-                f"Uploaded ViTPose baseline from {args.vitpose_export} to "
-                f"{args.repo_id}/baseline"
+                f"Uploaded ViTPose baseline from {args.vitpose_export} to {args.repo_id}/baseline"
             )
 
     print(f"Published to https://huggingface.co/{args.repo_id}")

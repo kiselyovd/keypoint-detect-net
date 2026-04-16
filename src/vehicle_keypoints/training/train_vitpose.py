@@ -3,6 +3,7 @@
 Separate from `train.py` — the main YOLO path bypasses Lightning entirely and
 is handled by Ultralytics' own training loop in train.py.
 """
+
 from __future__ import annotations
 
 from pathlib import Path

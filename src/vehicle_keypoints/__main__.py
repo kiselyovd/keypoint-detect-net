@@ -1,4 +1,5 @@
 """CLI entrypoint: python -m vehicle_keypoints"""
+
 from __future__ import annotations
 
 import sys

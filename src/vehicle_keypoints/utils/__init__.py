@@ -1,4 +1,5 @@
 """Utility modules."""
+
 from __future__ import annotations
 
 from .logging import configure_logging, get_logger
