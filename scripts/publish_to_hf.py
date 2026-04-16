@@ -120,8 +120,8 @@ def main() -> None:
     )
     parser.add_argument(
         "--hf-dataset",
-        default="",
-        help="HF dataset ID (e.g. user/my-dataset).",
+        default="carfusion",
+        help="HF dataset ID (default: carfusion).",
     )
     parser.add_argument(
         "--dataset-name",
@@ -130,29 +130,34 @@ def main() -> None:
     )
     parser.add_argument(
         "--domain-tag",
-        default="",
-        help="Domain tag (e.g. medical, biology).",
+        default="vehicle-keypoints",
+        help="Domain tag (default: vehicle-keypoints).",
     )
     parser.add_argument(
         "--pipeline-tag",
-        default="",
-        help="HF pipeline tag (e.g. image-segmentation).",
+        default="keypoint-detection",
+        help="HF pipeline tag (default: keypoint-detection).",
     )
     parser.add_argument(
         "--library-name",
-        default="transformers",
-        help="Library name pill on HF (default: transformers).",
+        default="ultralytics",
+        help="Library name pill on HF (default: ultralytics).",
     )
     parser.add_argument(
         "--tags",
-        default="",
-        help="Comma-separated extra tags.",
+        default="yolo,pose,carfusion",
+        help="Comma-separated extra tags (default: yolo,pose,carfusion).",
     )
     parser.add_argument(
         "--hf-export",
         default="artifacts/hf_export",
         metavar="DIR",
         help="Directory produced by export_hf_native.py; contents copied to HF repo root.",
+    )
+    parser.add_argument(
+        "--vitpose-export",
+        default=None,
+        help="Path to ViTPose safetensors dir (uploaded under baseline/ on the HF repo)",
     )
     args = parser.parse_args()
 
@@ -169,12 +174,15 @@ def main() -> None:
     if args.widget_sources:
         widget_dir = Path(args.widget_sources)
         if widget_dir.is_dir():
+            widget_files = sorted(
+                list(widget_dir.glob("*.png")) + list(widget_dir.glob("*.jpg"))
+            )
             widget_examples = [
                 {
                     "src": f"https://huggingface.co/{args.repo_id}/resolve/main/samples/{p.name}",
                     "example_title": p.stem,
                 }
-                for p in sorted(widget_dir.glob("*.png"))
+                for p in widget_files
             ]
 
     dataset_name = args.dataset_name or args.hf_dataset
@@ -203,8 +211,11 @@ def main() -> None:
             if widget_dir.is_dir():
                 samples_dest = tmp_path / "samples"
                 samples_dest.mkdir(parents=True, exist_ok=True)
-                for png in sorted(widget_dir.glob("*.png")):
-                    shutil.copy2(png, samples_dest / png.name)
+                widget_src_files = sorted(
+                    list(widget_dir.glob("*.png")) + list(widget_dir.glob("*.jpg"))
+                )
+                for img in widget_src_files:
+                    shutil.copy2(img, samples_dest / img.name)
 
         render_model_card(
             template_path=Path(args.template),
@@ -240,6 +251,18 @@ def main() -> None:
             folder_path=str(tmp_path),
             commit_message=commit_message,
         )
+
+        if getattr(args, "vitpose_export", None):
+            api.upload_folder(
+                folder_path=args.vitpose_export,
+                repo_id=args.repo_id,
+                path_in_repo="baseline",
+                commit_message="Baseline ViTPose-S weights",
+            )
+            print(
+                f"Uploaded ViTPose baseline from {args.vitpose_export} to "
+                f"{args.repo_id}/baseline"
+            )
 
     print(f"Published to https://huggingface.co/{args.repo_id}")
 
