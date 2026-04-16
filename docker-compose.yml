@@ -1,5 +1,5 @@
 services:
-api:
+  api:
     build:
       context: .
       target: serving
@@ -16,7 +16,7 @@ api:
       interval: 30s
       timeout: 5s
       retries: 3
-mlflow:
+  mlflow:
     image: ghcr.io/mlflow/mlflow:v2.11.3
     ports:
       - "5000:5000"

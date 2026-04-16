@@ -109,6 +109,18 @@ ignore_errors = true
 [[tool.mypy.overrides]]
 module = ["yaml", "yaml.*", "ultralytics.*", "pycocotools.*", "cv2", "shapely.*", "transformers.*"]
 ignore_missing_imports = true
+
+# Modules with type: ignore comments that may be redundant depending on which
+# stubs are installed in the current env (pre-commit isolates its env, so
+# transformers/PIL stubs may or may not be present). Silence warn_unused_ignores
+# to avoid thrashing between environments.
+[[tool.mypy.overrides]]
+module = [
+    "vehicle_keypoints.models.vitpose",
+    "vehicle_keypoints.models.lightning_module",
+    "vehicle_keypoints.data.coco_dataset",
+]
+warn_unused_ignores = false
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-v --tb=short --cov=src --cov-report=term --cov-report=xml --cov-fail-under=10"
