@@ -24,10 +24,10 @@ class ViTPoseSmall(nn.Module):
                     model_id, num_labels=num_keypoints, ignore_mismatched_sizes=True
                 )
             except Exception:
-                cfg = VitPoseConfig(num_labels=num_keypoints)
+                cfg = VitPoseConfig(num_labels=num_keypoints)  # type: ignore[call-arg]
                 self.backbone = VitPoseForPoseEstimation(cfg)
         else:
-            cfg = VitPoseConfig(num_labels=num_keypoints)
+            cfg = VitPoseConfig(num_labels=num_keypoints)  # type: ignore[call-arg]
             self.backbone = VitPoseForPoseEstimation(cfg)
         self.num_keypoints = num_keypoints
 

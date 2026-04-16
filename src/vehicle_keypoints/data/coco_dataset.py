@@ -105,7 +105,10 @@ class CocoKeypointsDataset(Dataset):
             )
 
         crop = img_arr[y0:y1, x0:x1]
-        crop_img = Image.fromarray(crop).resize((self.crop_hw[1], self.crop_hw[0]), Image.BILINEAR)
+        crop_img = Image.fromarray(crop).resize(
+            (self.crop_hw[1], self.crop_hw[0]),
+            Image.BILINEAR,  # type: ignore[attr-defined]
+        )
         scale_x = self.heatmap_hw[1] / (x1 - x0)
         scale_y = self.heatmap_hw[0] / (y1 - y0)
 
