@@ -4,14 +4,28 @@ repo_url: https://github.com/kiselyovd/vehicle-keypoints
 theme:
   name: material
   palette:
-    - scheme: default
-      primary: indigo
-    - scheme: slate
-      primary: indigo
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep orange
+      accent: orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep orange
+      accent: orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
   features:
     - content.code.copy
     - navigation.indexes
     - navigation.tabs
+    - navigation.top
+    - toc.integrate
+    - search.highlight
+    - search.suggest
 plugins:
   - search
   - mkdocstrings:
@@ -28,4 +42,7 @@ nav:
   - Architecture: architecture.md
   - Training: training.md
   - Serving: serving.md
+  - Benchmarks: BENCHMARKS.md
+  - Reproducibility: REPRODUCIBILITY.md
+  - Limitations: LIMITATIONS.md
   - API reference: api.md

@@ -2,11 +2,12 @@
 
 Production-grade 14-keypoint vehicle pose estimation on CarFusion — YOLO26-pose (main) + ViTPose-S (baseline).
 
-[![CI](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml/badge.svg)](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml)
-[![Docs](https://img.shields.io/badge/docs-mkdocs-informational)](https://kiselyovd.github.io/vehicle-keypoints/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
-[![HF Hub](https://img.shields.io/badge/🤗-kiselyovd%2Fvehicle--keypoints-yellow)](https://huggingface.co/kiselyovd/vehicle-keypoints)
+[![CI](https://img.shields.io/github/actions/workflow/status/kiselyovd/vehicle-keypoints/ci.yml?branch=main&label=CI&style=for-the-badge&logo=github)](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-mkdocs-526CFE?style=for-the-badge&logo=materialformkdocs&logoColor=white)](https://kiselyovd.github.io/vehicle-keypoints/)
+[![codecov](https://img.shields.io/codecov/c/github/kiselyovd/vehicle-keypoints?style=for-the-badge&logo=codecov&logoColor=white)](https://codecov.io/gh/kiselyovd/vehicle-keypoints)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+[![Python 3.12+](https://img.shields.io/badge/Python-3.12%20%7C%203.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![HF Model](https://img.shields.io/badge/🤗%20HF%20Hub-model-FFD21E?style=for-the-badge)](https://huggingface.co/kiselyovd/vehicle-keypoints)
 
 End-to-end toolkit for detecting vehicles and regressing **14 anatomical keypoints per car** (wheels, lights, mirrors, roof corners) on the CarFusion (CMU) dataset. The main model is a single-stage **YOLO26-pose** detector (Ultralytics); the baseline is a top-down **ViTPose-S** wrapped in PyTorch Lightning and fed by a YOLO car detector. The stack is Hydra-configured, trained from the CLI, evaluated with OKS-mAP + PCK@0.05, served over FastAPI + Docker, documented with MkDocs Material, and distributed through the Hugging Face Hub. Research and education only — **not a primary sensor for autonomous driving**.
 

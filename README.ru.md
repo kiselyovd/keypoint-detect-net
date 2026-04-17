@@ -2,11 +2,12 @@
 
 Production-уровневая оценка позы автомобиля по 14 ключевым точкам на CarFusion — YOLO26-pose (основная) + ViTPose-S (baseline).
 
-[![CI](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml/badge.svg)](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml)
-[![Docs](https://img.shields.io/badge/docs-mkdocs-informational)](https://kiselyovd.github.io/vehicle-keypoints/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
-[![HF Hub](https://img.shields.io/badge/🤗-kiselyovd%2Fvehicle--keypoints-yellow)](https://huggingface.co/kiselyovd/vehicle-keypoints)
+[![CI](https://img.shields.io/github/actions/workflow/status/kiselyovd/vehicle-keypoints/ci.yml?branch=main&label=CI&style=for-the-badge&logo=github)](https://github.com/kiselyovd/vehicle-keypoints/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/docs-mkdocs-526CFE?style=for-the-badge&logo=materialformkdocs&logoColor=white)](https://kiselyovd.github.io/vehicle-keypoints/)
+[![codecov](https://img.shields.io/codecov/c/github/kiselyovd/vehicle-keypoints?style=for-the-badge&logo=codecov&logoColor=white)](https://codecov.io/gh/kiselyovd/vehicle-keypoints)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+[![Python 3.12+](https://img.shields.io/badge/Python-3.12%20%7C%203.13-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![HF Model](https://img.shields.io/badge/🤗%20HF%20Hub-model-FFD21E?style=for-the-badge)](https://huggingface.co/kiselyovd/vehicle-keypoints)
 
 Комплексный инструментарий для детекции автомобилей и регрессии **14 анатомических ключевых точек** (колёса, фары, зеркала, углы крыши) на датасете CarFusion (CMU). Основная модель — одностадийный детектор **YOLO26-pose** (Ultralytics); baseline — top-down **ViTPose-S**, обёрнутый в PyTorch Lightning и получающий кропы от YOLO-детектора автомобилей. Стек настраивается через Hydra, обучается из CLI, оценивается по OKS-mAP + PCK@0.05, публикуется через FastAPI + Docker, документируется MkDocs Material и распространяется через Hugging Face Hub. Только для исследований и обучения — **не является основным сенсором для автономного вождения**.
 
