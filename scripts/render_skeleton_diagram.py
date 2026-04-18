@@ -88,7 +88,7 @@ def render() -> None:
         facecolor=BG,
     )
 
-    ax_img = fig.add_axes([0.0, 0.0, w_img / canvas_w, h_img / canvas_h])
+    ax_img = fig.add_axes((0.0, 0.0, w_img / canvas_w, h_img / canvas_h))
     ax_img.imshow(img, extent=(0, w_img, h_img, 0))
     ax_img.set_xlim(0, w_img)
     ax_img.set_ylim(h_img, 0)
@@ -163,7 +163,7 @@ def render() -> None:
             zorder=4,
         )
 
-    ax_leg = fig.add_axes([w_img / canvas_w, 0.0, legend_w / canvas_w, h_img / canvas_h])
+    ax_leg = fig.add_axes((w_img / canvas_w, 0.0, legend_w / canvas_w, h_img / canvas_h))
     ax_leg.set_xlim(0, 1)
     ax_leg.set_ylim(0, 1)
     ax_leg.axis("off")
@@ -196,12 +196,12 @@ def render() -> None:
     row_h = 0.85 / 14
     top_row = 0.08 + 0.85 - row_h * 0.5
     for i, name in enumerate(KEYPOINT_NAMES):
-        y = top_row - row_h * i
+        y_frac: float = top_row - row_h * i
         hollow = i == 13
         if hollow:
             ax_leg.scatter(
                 [0.12],
-                [y],
+                [y_frac],
                 s=16**2,
                 facecolors="none",
                 edgecolors=OUTLINE,
@@ -211,7 +211,7 @@ def render() -> None:
         else:
             ax_leg.scatter(
                 [0.12],
-                [y],
+                [y_frac],
                 s=16**2,
                 facecolors=KPT_FILL,
                 edgecolors=OUTLINE,
@@ -220,7 +220,7 @@ def render() -> None:
             )
         ax_leg.text(
             0.18,
-            y,
+            y_frac,
             f"{i:>2}. {name}",
             transform=ax_leg.transAxes,
             ha="left",
