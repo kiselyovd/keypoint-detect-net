@@ -16,7 +16,6 @@ Auto-generated reference for the `vehicle_keypoints` package via [mkdocstrings](
 
 ::: vehicle_keypoints.models.factory
 ::: vehicle_keypoints.models.lightning_module
-::: vehicle_keypoints.models.metrics
 ::: vehicle_keypoints.models.vitpose
 
 ## Training

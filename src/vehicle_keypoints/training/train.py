@@ -33,6 +33,8 @@ def main(cfg: DictConfig) -> None:
         batch=cfg.data.batch_size,
         project=out_abs,
         name=cfg.experiment_name,
+        workers=0,  # Windows multiprocessing hangs with workers>0 + ultralytics spawn
+        patience=max(5, int(cfg.trainer.max_epochs * 0.3)),  # early stop if no improvement
     )
     log.info("train.done")
     return
