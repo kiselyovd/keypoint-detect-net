@@ -32,6 +32,21 @@ plugins:
       handlers:
         python:
           paths: [src]
+          options:
+            docstring_style: google
+            docstring_section_style: table
+            show_source: true
+            show_signature_annotations: true
+            separate_signature: true
+            merge_init_into_class: true
+            show_root_heading: true
+            show_root_full_path: false
+            show_category_heading: true
+            show_if_no_docstring: false
+            members_order: source
+            filters: ["!^_"]
+            heading_level: 3
+            line_length: 80
 markdown_extensions:
   - admonition
   - pymdownx.superfences:
