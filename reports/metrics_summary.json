@@ -1,0 +1,12 @@
+{
+  "Main model": "YOLO26-pose",
+  "Main OKS-mAP": "22.0%",
+  "Main OKS-mAP50": "35.0%",
+  "Main PCK@0.05": "49.6%",
+  "Baseline model": "ViTPose-S",
+  "Baseline OKS-mAP": "0.1%",
+  "Baseline OKS-mAP50": "0.4%",
+  "Baseline PCK@0.05": "13.7%",
+  "Test size (images)": 12761,
+  "N predictions": 39252
+}

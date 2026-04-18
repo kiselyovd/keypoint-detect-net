@@ -89,10 +89,14 @@ def _oks_summary(coco_gt_path: Path, preds_json: Path) -> dict[str, float]:
     gt = CocoGt(str(coco_gt_path))
     dt = gt.loadRes(str(preds_json))
     runner = CocoEvaluator(gt, dt, iouType="keypoints")
+    # CarFusion has 14 keypoints; pycocotools defaults to COCO-human 17 sigmas.
+    # Use conservative uniform sigma (0.05) for non-human keypoints until
+    # dataset-specific anatomical sigmas are calibrated.
+    runner.params.kpt_oks_sigmas = np.ones(14) * 0.05
     runner.evaluate()
     runner.accumulate()
     runner.summarize()
-    stats = runner.stats.tolist()
+    stats = list(runner.stats)
     return {
         "oks_map": stats[0],
         "oks_map_50": stats[1],
