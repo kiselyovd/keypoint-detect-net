@@ -1,29 +1,31 @@
 # Architecture
 
+Two independent branches that share the same CarFusion COCO export but diverge at the dataset layer: YOLO consumes a processed YOLO-layout tree via `data.yaml`, while ViTPose reads the COCO JSON directly and renders Gaussian heatmaps per visible keypoint.
+
 ## Data flow
 
-```text
-D:/ProjectsData/Car Key Point/datasets/carfusion/       [CarFusion COCO-preexported]
-   |
-   |  scripts/sync_data.sh (or convert_carfusion_to_coco.py for fresh raw dumps)
-   v
-data/raw/{annotations,train,test}                        [gitignored]
-   |
-   |  src/vehicle_keypoints/data/prepare.py              [scene-level 90/10 split]
-   v
-data/processed/{images,labels}/{train,val,test}          [YOLO layout + data.yaml]
-   |
-   +--> YOLO path --> src/vehicle_keypoints/training/train.py   (Ultralytics YOLO26-pose)
-   |                    -> artifacts/<run>/weights/best.pt      [Ultralytics .pt]
-   |                    -> scripts/publish_to_hf.py -> HF Hub: kiselyovd/vehicle-keypoints
-   |
-   +--> ViTPose path --> CocoKeypointsDataset (top-down crops + Gaussian heatmaps)
-                          -> training/train_vitpose.py (Lightning + Hydra + MLflow)
-                          -> artifacts/baseline/checkpoints/best.ckpt
-                          -> HF Hub baseline/ subdir
-```
+```mermaid
+flowchart LR
+  Src[CarFusion COCO<br/>D:/ProjectsData/Car Key Point] --> Sync[scripts/sync_data.sh]
+  Sync --> Raw["data/raw/{annotations,train,test}<br/>gitignored"]
+  Raw --> Prep[data/prepare.py<br/>scene-level 90/10 split]
+  Prep --> Proc["data/processed/{images,labels}<br/>YOLO layout + data.yaml"]
 
-The two branches share the same `data/raw/` source (the CarFusion COCO export) but diverge at the dataset layer: YOLO consumes the processed `data/processed/` YOLO-layout tree via `data.yaml`, while ViTPose reads the COCO JSON directly through `CocoKeypointsDataset`, which crops to the per-instance bounding box and renders Gaussian heatmaps for each visible keypoint.
+  Proc --> YOLOTrain[training/train.py<br/>Ultralytics YOLO26-pose]
+  YOLOTrain --> MainArt["artifacts/&lt;run&gt;/weights/best.pt"]
+  MainArt --> Publish[scripts/publish_to_hf.py]
+  Publish --> HF[HF Hub<br/>kiselyovd/vehicle-keypoints]
+
+  Raw --> COCODS[CocoKeypointsDataset<br/>top-down crops + Gaussian heatmaps]
+  COCODS --> ViTTrain[training/train_vitpose.py<br/>Lightning + Hydra + MLflow]
+  ViTTrain --> BaseArt[artifacts/baseline/checkpoints/best.ckpt]
+  BaseArt --> Publish
+  Publish --> HFBase[HF Hub: baseline/ subdir]
+
+  MainArt --> Eval[evaluation/evaluate.py<br/>OKS-mAP + PCK]
+  BaseArt --> Eval
+  MainArt --> API[FastAPI /detect]
+```
 
 ## Model-choice rationale
 
