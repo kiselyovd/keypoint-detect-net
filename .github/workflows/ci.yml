@@ -53,7 +53,7 @@ jobs:
     needs: lint-test
     steps:
       - uses: actions/checkout@v6
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
       - name: Build training image
         uses: docker/build-push-action@v5
         with:
