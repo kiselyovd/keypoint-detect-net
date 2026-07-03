@@ -56,11 +56,8 @@ CarFusion is a **noisy yardstick**. Its ground truth is multi-view-triangulated 
 Two facts support that the synthetic **data** is high quality, independent of the
 CarFusion comparison:
 
-- A model trained **only** on the synthetic frames reaches **0.86 box mAP@50** on
-  held-out synthetic frames - the 24-point labels are clean and learnable.
-  ([synthetic model on the Hub](https://huggingface.co/citysample-vehicle-keypoints-24pt).)
-- The labels are pixel-exact by construction (above), denser (24 vs 14 points), and
-  complete (no occlusion-triangulation gaps).
+- A model trained **only** on the synthetic frames reaches **0.84 box mAP@50 / 0.60 pose mAP@50** on held-out synthetic frames - the 24-point labels are clean and learnable ([synthetic model on the Hub](https://huggingface.co/kiselyovd/citysample-vehicle-keypoints-24pt)). Notably, switching to the mesh-derived configs **doubled** in-domain pose mAP (0.33 -> 0.60): consistent labels are far easier to learn, even though real-image transfer stayed flat.
+- The labels are mesh-exact by construction (above), denser (24 vs 14 points), and complete (no occlusion-triangulation gaps).
 
 ## Ruling out label geometry: the mesh-derived configs
 

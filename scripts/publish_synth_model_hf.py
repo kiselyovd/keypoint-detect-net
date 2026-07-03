@@ -5,7 +5,10 @@ the model trained *entirely* on the synthetic City Sample frames - it shows the
 24-point labels are clean and learnable in-domain, separate from the production
 real-world model (kiselyovd/vehicle-keypoints).
 
-    uv run python scripts/publish_synth_model_hf.py
+    uv run python scripts/publish_synth_model_hf.py \
+        --box50 0.86 --box 0.52 --pose50 0.33 --pose 0.19
+(the four numbers are the in-domain val metrics printed by
+scripts/synth_24pt_experiment.py)
 """
 
 from __future__ import annotations
@@ -54,16 +57,22 @@ their keypoints well on held-out synthetic frames. For real-world 14-point vehic
 keypoints, see the production model
 [kiselyovd/vehicle-keypoints](https://huggingface.co/kiselyovd/vehicle-keypoints).
 
+The training labels are derived geometrically from each vehicle's own mesh data \
+(skeletal wheel bones, vertex-cloud roofline, light/mirror material sections), \
+so keypoints are exact per body shape - a van's high tail lights, a pickup's \
+cab-only roof - not a scaled sedan template.
+
 ## In-domain results (held-out synthetic val)
 
 | Metric | Box | Pose |
 |---|---|---|
-| mAP@50 | **0.859** | 0.331 |
-| mAP@50-95 | 0.523 | 0.194 |
+| mAP@50 | **{box50:.3f}** | {pose50:.3f} |
+| mAP@50-95 | {box:.3f} | {pose:.3f} |
 
 (Pose mAP is understated: ultralytics uses default OKS sigmas, which are tuned for
 17-point human pose, not this 24-point vehicle schema.) Trained from
-`yolo26n-pose` on 1,296 synthetic frames, 100 epochs, imgsz 480.
+`yolo26n-pose` on 2,259 synthetic frames (the mesh-derived 2,510-frame capture,
+90/10 split), 100 epochs, imgsz 480.
 
 ## Usage
 
@@ -79,13 +88,16 @@ results = model.predict("your_street_scene.jpg")
 
 ## Honest caveats
 
-- **Synthetic domain.** Trained only on rendered frames; expect a sim-to-real gap
-  on real photos (no real images were used).
-- **Evaluation.** Cross-evaluating against the real CarFusion dataset is confounded
-  by CarFusion's own noisy, sparse 14-point labels - it conflates transfer quality
-  with label-convention mismatch and is not a fair judge of this model. The
-  in-domain numbers above and the dataset's pixel-exact construction are the honest
-  signal of label quality.
+- **Synthetic domain.** Trained only on rendered frames; the sim-to-real gap is \
+real and measured: on the CarFusion test set this model reaches PCK@0.05 ~0.14 \
+(first 14 points) - it learns vehicle topology but localisation on real photos \
+is unreliable. A label-precision control (re-deriving all keypoints exactly \
+from mesh geometry) left that number unchanged, so the gap is appearance and \
+fleet coverage, not label quality.
+- **Fleet coverage.** City Sample has on the order of a dozen vehicle models; \
+errors on real photos concentrate on body shapes far from that fleet. See the \
+[sim-to-real study](https://kiselyovd.github.io/vehicle-keypoints/phase0/synthetic-pretraining/) \
+for the full analysis.
 
 ## License
 
@@ -95,25 +107,36 @@ the UE EULA (non-interactive renders are distributable; no Epic assets are shipp
 
 
 def main() -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--box50", type=float, required=True, help="in-domain box mAP@50")
+    ap.add_argument("--box", type=float, required=True, help="in-domain box mAP@50-95")
+    ap.add_argument("--pose50", type=float, required=True, help="in-domain pose mAP@50")
+    ap.add_argument("--pose", type=float, required=True, help="in-domain pose mAP@50-95")
+    args = ap.parse_args()
     if not WEIGHTS.exists():
         raise SystemExit(f"weights not found: {WEIGHTS}")
     api = HfApi()
     api.create_repo(REPO, repo_type="model", exist_ok=True)
     card = Path("artifacts/synth24_runs/synth24/MODEL_CARD.md")
-    card.write_text(CARD, encoding="utf-8")
+    card.write_text(
+        CARD.format(box50=args.box50, box=args.box, pose50=args.pose50, pose=args.pose),
+        encoding="utf-8",
+    )
     api.upload_file(
         path_or_fileobj=str(WEIGHTS),
         path_in_repo="best.pt",
         repo_id=REPO,
         repo_type="model",
-        commit_message="Add synth-only 24-pt YOLO-pose weights",
+        commit_message="Retrain on the mesh-derived 2510-frame capture",
     )
     api.upload_file(
         path_or_fileobj=str(card),
         path_in_repo="README.md",
         repo_id=REPO,
         repo_type="model",
-        commit_message="Add model card",
+        commit_message="Update model card (mesh-derived capture, honest sim-to-real numbers)",
     )
     print(f"published -> https://huggingface.co/{REPO}")
 
