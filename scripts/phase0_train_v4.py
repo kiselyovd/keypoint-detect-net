@@ -45,7 +45,7 @@ WORK = REPO_ROOT / "artifacts" / "phase0_work"
 SYNTH_V4_ROOT = Path(
     os.environ.get(
         "VK_SYNTH_PHASE0V4_DIR",
-        "D:/Projects/GitHub/ue5-vehicle-synth/captures/phase0_v4",
+        str(REPO_ROOT.parent / "ue5-vehicle-synth" / "captures" / "phase0_v4"),
     )
 )
 

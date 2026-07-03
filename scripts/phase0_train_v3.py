@@ -42,7 +42,8 @@ REPORTS = REPO_ROOT / "reports"
 WORK = REPO_ROOT / "artifacts" / "phase0_work"
 SYNTH_V2_ROOT = Path(
     os.environ.get(
-        "VK_SYNTH_PHASE0V2_DIR", "D:/Projects/GitHub/ue5-vehicle-synth/captures/phase0_v2"
+        "VK_SYNTH_PHASE0V2_DIR",
+        str(REPO_ROOT.parent / "ue5-vehicle-synth" / "captures" / "phase0_v2"),
     )
 )
 

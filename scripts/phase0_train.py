@@ -7,7 +7,7 @@ Control  : fine-tune yolo26n-pose.pt directly on same 100 real frames (no synth)
 Eval     : run evaluate.py on CarFusion test split; write reports/phase0_main_metrics.json.
 
 Usage (PowerShell):
-    $env:VK_SYNTH_PHASE0_DIR = "D:/Projects/GitHub/ue5-vehicle-synth/captures/phase0"
+    $env:VK_SYNTH_PHASE0_DIR = "../ue5-vehicle-synth/captures/phase0"  # defaults to this if unset
     .venv/Scripts/python.exe -u scripts/phase0_train.py 2>&1 | Tee-Object logs/phase0.log
 
 All intermediates go to artifacts/phase0/.  Checkpoints are gitignored.
@@ -207,8 +207,16 @@ def _yolo_train(
     lrf: float = 0.01,
     freeze: int | None = None,
     patience: int | None = None,
+    workers: int = 0,
+    cache: str | bool = False,
 ) -> Path:
-    """Generic YOLO-pose training wrapper. Returns best.pt path."""
+    """Generic YOLO-pose training wrapper. Returns best.pt path.
+
+    workers/cache default to the original single-thread, no-cache behaviour (kept
+    so concurrent runs don't race on the disk .npy cache). Callers that run one job
+    at a time can pass workers>0 and cache='ram' to stop the GPU starving on the
+    single-threaded data loader.
+    """
     import ultralytics
     from ultralytics import YOLO
 
@@ -221,11 +229,11 @@ def _yolo_train(
         "epochs": epochs,
         "imgsz": imgsz,
         "batch": batch,
-        "workers": 0,
+        "workers": workers,
         "patience": patience if patience is not None else max(5, int(epochs * 0.4)),
         "project": str(run_dir).replace("\\", "/"),
         "name": name,
-        "cache": False,
+        "cache": cache,
         "verbose": True,
         "plots": True,
         "lr0": lr0,
@@ -450,9 +458,11 @@ def write_kill_switch_report(
 def main() -> None:
     t0 = time.time()
 
+    repo_root = Path(__file__).parent.parent.resolve()
     synth_dir = Path(
         os.environ.get(
-            "VK_SYNTH_PHASE0_DIR", "D:/Projects/GitHub/ue5-vehicle-synth/captures/phase0"
+            "VK_SYNTH_PHASE0_DIR",
+            str(repo_root.parent / "ue5-vehicle-synth" / "captures" / "phase0"),
         )
     )
     if not synth_dir.is_dir():
@@ -461,7 +471,6 @@ def main() -> None:
             "(contains annotations/coco.json and rgb/)."
         )
 
-    repo_root = Path(__file__).parent.parent.resolve()
     artifacts = repo_root / "artifacts"
     processed_dir = repo_root / "data" / "processed"
     work_dir = artifacts / "phase0_work"

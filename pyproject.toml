@@ -168,7 +168,7 @@ ignore = ["DEP004"]
 DEP002 = ["nbstripout", "ipykernel", "pyyaml", "rich", "torchvision", "torchmetrics"]
 # phase0_train / phase0_train_v4 are local sibling scripts imported across the
 # phase0 drivers via sys.path (not installable packages).
-DEP001 = ["phase0_train", "phase0_train_v4"]
+DEP001 = ["phase0_train", "phase0_train_v4", "realism_filter"]
 
 [tool.codespell]
 skip = "uv.lock,*.ipynb,*.lock,data/*"

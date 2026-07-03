@@ -17,7 +17,8 @@ from pathlib import Path
 import yaml
 
 REPO = Path(__file__).parent.parent.resolve()
-SYNTH_COCO = Path("D:/Projects/GitHub/ue5-vehicle-synth/captures/phase0_v4/annotations/coco.json")
+SYNTH_ROOT = REPO.parent / "ue5-vehicle-synth" / "captures" / "phase0_v4"
+SYNTH_COCO = SYNTH_ROOT / "annotations" / "coco.json"
 WORK = REPO / "artifacts" / "phase0_work" / "synth_yolo_24pt"
 RUN_DIR = REPO / "artifacts" / "synth24_runs"
 NKPT = 24
@@ -55,7 +56,7 @@ def convert() -> Path:
     split = {"val": set(ids[:n_val]), "train": set(ids[n_val:])}
     if WORK.exists():
         shutil.rmtree(WORK)
-    root = Path("D:/Projects/GitHub/ue5-vehicle-synth/captures/phase0_v4")
+    root = SYNTH_ROOT
     for sp, sids in split.items():
         (WORK / "images" / sp).mkdir(parents=True, exist_ok=True)
         (WORK / "labels" / sp).mkdir(parents=True, exist_ok=True)

@@ -39,7 +39,7 @@ from phase0_train_v4 import SYNTH_V4_ROOT, V1_CKPT, oversample_real  # noqa: E40
 WORK = REPO_ROOT / "artifacts" / "phase0_work"
 RUN_DIR = REPO_ROOT / "artifacts" / "phase0_v5_runs"
 REPORTS = REPO_ROOT / "reports"
-REAL_VAL = "D:/Projects/GitHub/vehicle-keypoints/data/processed/images/val"
+REAL_VAL = str(REPO_ROOT / "data" / "processed" / "images" / "val").replace("\\", "/")
 
 
 def _arm_yaml(train_dirs: list[Path], out_path: Path) -> Path:

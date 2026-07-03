@@ -9,7 +9,7 @@ are saved for the visual sanity gate.
 
 Usage:
   uv run python scripts/calibrate_pose3d_frame.py \
-    --apollo-root "D:/ProjectsData/Car Key Point/data" \
+    --apollo-root "/path/to/apollocar3d/data" \
     --checkpoint artifacts/hf_export/weights.pt --n 80
 """
 

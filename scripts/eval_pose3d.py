@@ -6,7 +6,7 @@ metrics JSON and save qualitative overlays.
 
 Usage:
   uv run python scripts/eval_pose3d.py \
-    --apollo-root "D:/ProjectsData/Car Key Point/data" \
+    --apollo-root "/path/to/apollocar3d/data" \
     --checkpoint artifacts/sota/<run>/weights/best.pt \
     --split val --limit 100 --out reports/pose3d_apollo.json
 """

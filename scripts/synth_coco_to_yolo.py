@@ -2,8 +2,8 @@
 
 Usage:
     .venv/Scripts/python.exe scripts/synth_coco_to_yolo.py \\
-        --coco  D:/Projects/GitHub/ue5-vehicle-synth/captures/phase0/annotations/coco.json \\
-        --images D:/Projects/GitHub/ue5-vehicle-synth/captures/phase0 \\
+        --coco  ../ue5-vehicle-synth/captures/phase0/annotations/coco.json \\
+        --images ../ue5-vehicle-synth/captures/phase0 \\
         --out   artifacts/phase0_work/synth_yolo \\
         [--num-kpt 14] [--val-frac 0.1] [--seed 42]
 
